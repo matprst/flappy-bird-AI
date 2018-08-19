@@ -22,6 +22,7 @@ PIPE_SPACE_INIT = 100
 PIPE_WIDTH_INIT = 10
 PIPE_COLOR_INIT = WHITE
 PIPE_SPEED_INIT = -2
+PIPES_DISTANCE = 150
 
 class Ball:
     def __init__(self):
@@ -49,37 +50,46 @@ class Ball:
     def jump(self):
         self.velocity += - self.gravity * 12
 
+    def position(self):
+        return (self.x, self.y)
+
 class Pipe:
     def __init__(self):
         self.width_space = PIPE_SPACE_INIT
         self.y_space = random.randint(int(self.width_space / 2), WINDOW_HEIGHT - int(self.width_space / 2))
+        self.width = PIPE_WIDTH_INIT
         self.color = PIPE_COLOR_INIT
         self.speed = PIPE_SPEED_INIT
 
         self.top_x = WINDOW_WIDTH
         self.top_y = 0
         self.top_height = self.y_space - int(self.width_space / 2)
-        self.top_width = PIPE_WIDTH_INIT
 
         self.bottom_x = WINDOW_WIDTH
         self.bottom_y = self.y_space + int(self.width_space / 2)
         self.bottom_height = WINDOW_HEIGHT - self.y_space + int(self.width_space / 2)
-        self.bottom_width = PIPE_WIDTH_INIT
 
     def draw(self, display_surf):
-        pygame.draw.rect(display_surf, self.color, (self.top_x, self.top_y, self.top_width, self.top_height))
-        pygame.draw.rect(display_surf, self.color, (self.bottom_x, self.bottom_y, self.bottom_width, self.bottom_height))
+        pygame.draw.rect(display_surf, self.color, (self.top_x, self.top_y, self.width, self.top_height))
+        pygame.draw.rect(display_surf, self.color, (self.bottom_x, self.bottom_y, self.width, self.bottom_height))
 
     def update(self):
         self.top_x += self.speed
         self.bottom_x += self.speed
 
-    def x_pos(self):
+    def x_position(self):
         return self.top_x
+
+    def width_value(self):
+        return self.width
+
+    # return a tuple (width of the space, y position of the middle of the space)
+    def space(self):
+        return (self.width_space, self.y_space)
 
 def main():
 
-    global WINDOW_WIDTH, WINDOW_HEIGHT, WHITE, BLACK, GRAY, FPS
+    global WINDOW_WIDTH, WINDOW_HEIGHT, FPS, PIPES_DISTANCE
 
     pygame.init()
     DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0)
@@ -87,12 +97,17 @@ def main():
 
     fpsClock = pygame.time.Clock()
 
+    # create the ball
     jumper = Ball()
 
+    # create pipes array and first pipe
     pipes = []
     pipes.append(Pipe())
 
+    # game loop
     while True:
+
+        # events loop
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
@@ -103,18 +118,32 @@ def main():
         DISPLAYSURF.fill(BLACK)
 
         jumper.update()
-        jumper.draw(DISPLAYSURF)
+        # jumper.draw(DISPLAYSURF)
+
+        jumper_position = jumper.position()
+
+        closest_pipe = 0
+        distance_closest_pipe = WINDOW_WIDTH
 
         for pipe in pipes:
             pipe.update()
             pipe.draw(DISPLAYSURF)
 
             # remove the pipes not anymore in the frame
-            if pipe.x_pos() < 0:
+            if pipe.x_position() < 0:
                 pipes = pipes[1:]
 
+            if pipe.x_position() - jumper_position[0] < distance_closest_pipe:
+                closest_pipe = pipe
+                distance_closest_pipe = pipe.x_position() - jumper_position[0]
+
+        # check if ball touches pipe
+        if not (closest_pipe.x_position() < jumper_position[0] < closest_pipe.x_position() + closest_pipe.width_value() \
+        and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1] < closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
+            jumper.draw(DISPLAYSURF)
+
         # create new pipe
-        if pipes[-1].x_pos() % 150 == 0:
+        if pipes[-1].x_position() % PIPES_DISTANCE == 0:
             pipes.append(Pipe())
 
         pygame.display.update()
