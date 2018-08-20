@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+
+__author__= "Mathias Parisot"
+__email__= "parisot.mathias.31@gmail.com"
+
 import pygame, sys, random, os
 from pygame.locals import *
 
