@@ -17,6 +17,7 @@ BALL_SIZE_INIT = 8
 BALL_VELOCITY_INIT = 5
 BALL_GRAVITY_INIT = 1
 BALL_COLOR_INIT = RED
+BALL_SCORE_INIT = 0
 
 PIPE_SPACE_INIT = 100
 PIPE_WIDTH_INIT = 10
@@ -32,9 +33,12 @@ class Ball:
         self.velocity = BALL_VELOCITY_INIT
         self.gravity = BALL_GRAVITY_INIT
         self.color = BALL_COLOR_INIT
+        self.score = BALL_SCORE_INIT
+        self.dead = False
 
     def draw(self, display_surf):
-        pygame.draw.circle(display_surf, self.color, (self.x, self.y), self.size, 0)
+        if not self.dead:
+            pygame.draw.circle(display_surf, self.color, (self.x, self.y), self.size, 0)
 
     def update(self):
         self.velocity += self.gravity
@@ -52,6 +56,16 @@ class Ball:
 
     def position(self):
         return (self.x, self.y)
+
+    def increase_score(self):
+        self.score += 1
+        print(self.score)
+
+    def dies(self):
+        self.dead = True
+
+    def exist(self):
+        return not self.dead
 
 class Pipe:
     def __init__(self):
@@ -141,6 +155,14 @@ def main():
         if not (closest_pipe.x_position() < jumper_position[0] < closest_pipe.x_position() + closest_pipe.width_value() \
         and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1] < closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
             jumper.draw(DISPLAYSURF)
+        else:
+            jumper.dies()
+            pygame.quit()
+            sys.exit()
+
+        # increase score
+        if pipes[0].x_position() == jumper_position[0] and jumper.exist():
+            jumper.increase_score()
 
         # create new pipe
         if pipes[-1].x_position() % PIPES_DISTANCE == 0:
