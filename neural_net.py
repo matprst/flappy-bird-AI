@@ -26,11 +26,6 @@ class Neural_Network:
         self.second_bias = random.rand(output_nodes, 1)
         self.learning_rate = 0.2
 
-        print(input_nodes, hidden_nodes, output_nodes)
-        # print(self.first_weights_matrix)
-        # print(self.second_weights_matrix)
-
-
     def feedforward(self, input):
         hidden_output = self.first_weights_matrix * input
         hidden_output = add(hidden_output, self.first_bias)
@@ -55,17 +50,11 @@ class Neural_Network:
 
         #output error
         output_errors = target - activ_output
-        # print("backpropagation")
-        # print(target)
-        # print(output_errors)
 
         # output gradient
         output_gradient = vdsigmoid(activ_output)
-        # print("gradient")
-        # print(output_gradient)
         #hadamard products
         output_gradient = multiply(self.learning_rate, multiply(output_gradient, output_errors))
-        # print(output_gradient)
 
         # output delta
         activ_hidden_output_T = activ_hidden_output.transpose()
@@ -78,7 +67,6 @@ class Neural_Network:
 
         #hidden errors
         hidden_errors = self.second_weights_matrix.transpose() * output_errors
-        # print(hidden_errors)
 
         #hidden gradient
         hidden_gradient = vdsigmoid(activ_hidden_output)
@@ -92,8 +80,6 @@ class Neural_Network:
         self.first_weights_matrix = add(self.first_weights_matrix, delta_weights_first)
         # hidden adjust bias
         self.first_bias = add(self.first_bias, hidden_gradient)
-
-        return 6
 
 
 training_data = [
@@ -120,8 +106,6 @@ for j in range(5):
     for i in range(50000):
         index = random.randint(0, 4)
         data = training_data[index]
-        # print("\ni = ", i, "\n")
-        # i += 1
         n.backpropagation(data['inputs'], data['targets'])
 
     print("\nTEST\n")
