@@ -3,7 +3,7 @@
 __author__= "Mathias Parisot"
 __email__= "parisot.mathias.31@gmail.com"
 
-import pygame, sys, random, os
+import pygame, sys, random, os, neural_net, numpy, genetic
 from pygame.locals import *
 
 WINDOW_WIDTH = 400
@@ -41,6 +41,8 @@ class Ball:
         self.score = BALL_SCORE_INIT
         self.dead = False
 
+        self.brain = neural_net.Neural_Network(4, 4, 1)
+
     def draw(self, display_surf):
         if not self.dead:
             pygame.draw.circle(display_surf, self.color, (self.x, self.y), self.size, 0)
@@ -71,6 +73,23 @@ class Ball:
 
     def exist(self):
         return not self.dead
+
+    def think(self, pipe):
+
+        # input = [0, 0, 0, 0]
+        # input[0] = self.y
+        # input[1] = pipe.top_x
+        # input[2] = pipe.top_height
+        # input[3] = pipe.bottom_y
+        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
+        print(input)
+        #
+        # print(type(input))
+        # print(self.brain.feedforward(input))
+        output = numpy.asscalar(self.brain.feedforward(input))
+        print(output)
+        return output > 0.92
+
 
 class Pipe:
     def __init__(self):
@@ -119,6 +138,8 @@ def main():
     # create the ball
     jumper = Ball()
 
+    jumpers = genetic.Population(5)
+
     # create pipes array and first pipe
     pipes = []
     pipes.append(Pipe())
@@ -131,13 +152,18 @@ def main():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
                 sys.exit()
-            elif (event.type == KEYDOWN and event.key == K_SPACE):
-                jumper.jump()
+            # elif (event.type == KEYDOWN and event.key == K_SPACE):
+            #     jumper.jump()
+
+
 
         DISPLAYSURF.fill(BLACK)
 
-        jumper.update()
-        # jumper.draw(DISPLAYSURF)
+        # if jumper.think():
+        #     jumper.jump()
+        #
+        # jumper.update()
+        # # jumper.draw(DISPLAYSURF)
 
         jumper_position = jumper.position()
 
@@ -152,19 +178,28 @@ def main():
             if pipe.x_position() < 0:
                 pipes = pipes[1:]
 
-            if pipe.x_position() - jumper_position[0] < distance_closest_pipe:
+            if 0 < pipe.x_position() - jumper_position[0] < distance_closest_pipe:
                 closest_pipe = pipe
                 distance_closest_pipe = pipe.x_position() - jumper_position[0]
 
-        # check if ball touches pipe
-        if not (closest_pipe.x_position() < jumper_position[0] < closest_pipe.x_position() + closest_pipe.width_value() \
-        and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1] < closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
-            jumper.draw(DISPLAYSURF)
-        else:
-            jumper.dies()
-            pygame.quit()
-            sys.exit()
+        think = jumper.think(closest_pipe)
+        if think:
+            jumper.jump()
 
+        jumper.update()
+        # jumper.draw(DISPLAYSURF)
+
+        # check if ball touches pipe
+        # if not (closest_pipe.x_position() < jumper_position[0] < closest_pipe.x_position() + closest_pipe.width_value() \
+        # and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1] < closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
+        #     jumper.draw(DISPLAYSURF)
+        # else:
+        #     jumper.dies()
+        #     pygame.quit()
+        #     sys.exit()
+
+        jumper.draw(DISPLAYSURF)
+        jumpers.draw(DISPLAYSURF)
         # increase score
         if pipes[0].x_position() == jumper_position[0] and jumper.exist():
             jumper.increase_score()

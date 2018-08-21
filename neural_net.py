@@ -20,18 +20,21 @@ class Neural_Network:
     second_bias = 0
 
     def __init__(self, input_nodes, hidden_nodes, output_nodes):
+        print(input_nodes, hidden_nodes, output_nodes)
         self.first_weights_matrix = random.rand(hidden_nodes, input_nodes)
         self.second_weights_matrix = random.rand(output_nodes, hidden_nodes)
+        # print(self.second_weights_matrix)
         self.first_bias = random.rand(hidden_nodes, 1)
         self.second_bias = random.rand(output_nodes, 1)
         self.learning_rate = 0.2
 
     def feedforward(self, input):
-        hidden_output = self.first_weights_matrix * input
+        hidden_output = dot(self.first_weights_matrix, input)
         hidden_output = add(hidden_output, self.first_bias)
         activ_hidden_output = sigmoid(hidden_output)
+        print(activ_hidden_output)
 
-        output = self.second_weights_matrix * activ_hidden_output
+        output = dot(self.second_weights_matrix, activ_hidden_output)
         output = add(output, self.second_bias)
         activ_output = sigmoid(output)
 
@@ -80,38 +83,42 @@ class Neural_Network:
         self.first_weights_matrix = add(self.first_weights_matrix, delta_weights_first)
         # hidden adjust bias
         self.first_bias = add(self.first_bias, hidden_gradient)
+#
+# a = matrix('1, 2; 3 4')
+# b = matrix('2; 2')
+# print(a*b)
 
+if __name__ == '__main__':
+    training_data = [
+        {
+        'inputs': matrix('0; 1'),
+        'targets': matrix('1')
+        },
+        {
+        'inputs': matrix('1; 0'),
+        'targets': matrix('1')
+        },
+        {
+        'inputs': matrix('0; 0'),
+        'targets': matrix('0')
+        },
+        {
+        'inputs': matrix('1; 1'),
+        'targets': matrix('0')
+        },
+    ]
 
-training_data = [
-    {
-    'inputs': matrix('0; 1'),
-    'targets': matrix('1')
-    },
-    {
-    'inputs': matrix('1; 0'),
-    'targets': matrix('1')
-    },
-    {
-    'inputs': matrix('0; 0'),
-    'targets': matrix('0')
-    },
-    {
-    'inputs': matrix('1; 1'),
-    'targets': matrix('0')
-    },
-]
+    for j in range(5):
+        n = Neural_Network(2, 2, 1)
+        for i in range(50000):
+            index = random.randint(0, 4)
+            data = training_data[index]
+            n.backpropagation(data['inputs'], data['targets'])
 
-for j in range(5):
-    n = Neural_Network(2, 2, 1)
-    for i in range(50000):
-        index = random.randint(0, 4)
-        data = training_data[index]
-        n.backpropagation(data['inputs'], data['targets'])
-
-    print("\nTEST\n")
-    print(n.first_weights_matrix)
-    print(n.second_weights_matrix)
-    print(n.feedforward(matrix('0; 1')))
-    print(n.feedforward(matrix('1; 0')))
-    print(n.feedforward(matrix('0; 0')))
-    print(n.feedforward(matrix('1; 1')))
+        print("\nTEST\n")
+        print(n.first_weights_matrix)
+        print(n.second_weights_matrix)
+        print(n.feedforward(matrix('0; 1')))
+        print(n.feedforward(matrix('1; 0')))
+        print(n.feedforward(matrix('0; 0')))
+        print(n.feedforward(matrix('1; 1')))

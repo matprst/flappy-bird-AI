@@ -1,7 +1,7 @@
 __author__= "Mathias Parisot"
 __email__= "parisot.mathias.31@gmail.com"
 
-import game
+import game, neural_net
 
 class Population:
     population = []
@@ -10,5 +10,9 @@ class Population:
         for i in range(size):
             self.population.append(game.Ball())
 
-Pop = Population(2)
-print(Pop.population)
+    def draw(self, display_surf):
+        for ball in self.population:
+            ball.draw(display_surf)
+
+# Pop = Population(2)
+# print(Pop.population)
