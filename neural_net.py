@@ -32,7 +32,7 @@ class Neural_Network:
         hidden_output = dot(self.first_weights_matrix, input)
         hidden_output = add(hidden_output, self.first_bias)
         activ_hidden_output = sigmoid(hidden_output)
-        print(activ_hidden_output)
+        # print(activ_hidden_output)
 
         output = dot(self.second_weights_matrix, activ_hidden_output)
         output = add(output, self.second_bias)
