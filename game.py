@@ -6,7 +6,7 @@ __email__= "parisot.mathias.31@gmail.com"
 import pygame, sys, random, os, neural_net, numpy, genetic
 from pygame.locals import *
 
-WINDOW_WIDTH = 400
+WINDOW_WIDTH = 300
 WINDOW_HEIGHT = 300
 
 WHITE = (255, 255, 255)
@@ -24,14 +24,16 @@ BALL_GRAVITY_INIT = 1
 BALL_COLOR_INIT = RED
 BALL_SCORE_INIT = 0
 
-PIPE_SPACE_INIT = 100
+PIPE_SPACE_INIT = 176
 PIPE_WIDTH_INIT = 10
 PIPE_COLOR_INIT = WHITE
 PIPE_SPEED_INIT = -2
 PIPES_DISTANCE = 150
 
+SIZE_POPULATION = 100
+
 class Ball:
-    def __init__(self):
+    def __init__(self, brain = None):
         self.x = BALL_X_INIT
         self.y = BALL_Y_INIT
         self.size = BALL_SIZE_INIT
@@ -42,7 +44,10 @@ class Ball:
         self.fitness = 0
         self.dead = False
 
-        self.brain = neural_net.Neural_Network(4, 4, 1)
+        if brain is not None:
+            self.brain = brain
+        else:
+            self.brain = neural_net.Neural_Network(4, 4, 1)
 
     def draw(self, display_surf):
         if not self.dead:
@@ -59,7 +64,7 @@ class Ball:
             self.y = 0
             self.velocity = 0
 
-        self.increase_score()
+        self.score += 1
 
     def jump(self):
         self.velocity += - self.gravity * 12
@@ -67,8 +72,8 @@ class Ball:
     def position(self):
         return (self.x, self.y)
 
-    def increase_score(self):
-        self.score += 1
+    def increase_score(self, amount):
+        self.score += amount
 
     def dies(self):
         self.dead = True
@@ -84,13 +89,14 @@ class Ball:
         # input[2] = pipe.top_height
         # input[3] = pipe.bottom_y
         input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
+        # print("\n")
         # print(input)
         #
         # print(type(input))
         # print(self.brain.feedforward(input))
         output = numpy.asscalar(self.brain.feedforward(input))
         # print(output)
-        return output > 0.92
+        return output > 0.5
 
 
 class Pipe:
@@ -140,13 +146,17 @@ def main():
     # create the ball
     # jumper = Ball()
 
-    jumpers = genetic.Population(100)
+    jumpers = genetic.Population(SIZE_POPULATION)
+    # # create pipes array and first pipe
+    # pipes = []
+    # pipes.append(Pipe())
 
-    # create pipes array and first pipe
-    pipes = []
-    pipes.append(Pipe())
+    while True:
 
-    for i in range(5):
+        # create pipes array and first pipe
+        pipes = []
+        pipes.append(Pipe())
+
         # game loop
         # while True:
         while not all(jumper.dead for jumper in jumpers.population):
@@ -229,8 +239,8 @@ def main():
 
                     jumper.draw(DISPLAYSURF)
                     # increase score
-                    # if pipes[0].x_position() == BALL_X_INIT and jumper.exist():
-                    #     jumper.increase_score()
+                    if pipes[0].x_position() == BALL_X_INIT and jumper.exist():
+                        jumper.increase_score(100)
 
 
             # jumpers.update()
@@ -242,10 +252,15 @@ def main():
             pygame.display.update()
             fpsClock.tick(FPS)
 
-    print("fitness")
-    jumpers.fitness()
-    for jumper in jumpers.population:
-        print(jumper.fitness)
+        print("fitness")
+        jumpers.fitness()
+        # for jumper in jumpers.population:
+        #     print(jumper.fitness)
+        # print(jumpers.population)
+        print("max fit=", jumpers.max_fitness()[0])
+        print("max sco=", jumpers.max_score())
+        jumpers.next_generation()
+
 
 if __name__ == '__main__':
     main()
