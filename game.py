@@ -24,13 +24,13 @@ BALL_GRAVITY_INIT = 1
 BALL_COLOR_INIT = RED
 BALL_SCORE_INIT = 0
 
-PIPE_SPACE_INIT = 176
+PIPE_SPACE_INIT = 100
 PIPE_WIDTH_INIT = 10
 PIPE_COLOR_INIT = WHITE
 PIPE_SPEED_INIT = -2
 PIPES_DISTANCE = 150
 
-SIZE_POPULATION = 100
+SIZE_POPULATION = 200
 
 class Ball:
     def __init__(self, brain = None):
@@ -150,9 +150,9 @@ def main():
     # # create pipes array and first pipe
     # pipes = []
     # pipes.append(Pipe())
-
+    j = 0
     while True:
-
+        j += 1
         # create pipes array and first pipe
         pipes = []
         pipes.append(Pipe())
@@ -252,13 +252,19 @@ def main():
             pygame.display.update()
             fpsClock.tick(FPS)
 
-        print("fitness")
+        print("\ngeneration", j)
         jumpers.fitness()
         # for jumper in jumpers.population:
         #     print(jumper.fitness)
         # print(jumpers.population)
         print("max fit=", jumpers.max_fitness()[0])
-        print("max sco=", jumpers.max_score())
+        mx = jumpers.max_score()
+        print("max sco=", mx[0])
+        print("matrices=")
+        print(mx[1].brain.first_weights_matrix)
+        print(mx[1].brain.second_weights_matrix)
+        print(mx[1].brain.first_bias)
+        print(mx[1].brain.second_bias)
         jumpers.next_generation()
 
 
