@@ -120,10 +120,12 @@ class Population:
 
     def max_score(self):
         m = 0
+        e = 0
         for elem in self.population:
             if elem.score > m:
                 m = elem.score
-        return m
+                e = elem
+        return m, e
 
 # Pop = Population(2)
 # print(Pop.population)
