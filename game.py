@@ -82,12 +82,12 @@ class Ball:
         # input[2] = pipe.top_height
         # input[3] = pipe.bottom_y
         input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
-        print(input)
+        # print(input)
         #
         # print(type(input))
         # print(self.brain.feedforward(input))
         output = numpy.asscalar(self.brain.feedforward(input))
-        print(output)
+        # print(output)
         return output > 0.92
 
 
@@ -136,9 +136,9 @@ def main():
     fpsClock = pygame.time.Clock()
 
     # create the ball
-    jumper = Ball()
+    # jumper = Ball()
 
-    jumpers = genetic.Population(5)
+    jumpers = genetic.Population(20)
 
     # create pipes array and first pipe
     pipes = []
@@ -165,8 +165,6 @@ def main():
         # jumper.update()
         # # jumper.draw(DISPLAYSURF)
 
-        jumper_position = jumper.position()
-
         closest_pipe = 0
         distance_closest_pipe = WINDOW_WIDTH
 
@@ -178,31 +176,56 @@ def main():
             if pipe.x_position() < 0:
                 pipes = pipes[1:]
 
-            if 0 < pipe.x_position() - jumper_position[0] < distance_closest_pipe:
+            if -pipe.width_value() < pipe.x_position() - BALL_X_INIT < distance_closest_pipe:
                 closest_pipe = pipe
-                distance_closest_pipe = pipe.x_position() - jumper_position[0]
+                distance_closest_pipe = pipe.x_position() - BALL_X_INIT
 
-        think = jumper.think(closest_pipe)
-        if think:
-            jumper.jump()
+        # print(closest_pipe)
 
-        jumper.update()
-        # jumper.draw(DISPLAYSURF)
+        for i, jumper in enumerate(jumpers.population):
+            jumper_position = jumper.position()
 
-        # check if ball touches pipe
-        # if not (closest_pipe.x_position() < jumper_position[0] < closest_pipe.x_position() + closest_pipe.width_value() \
-        # and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1] < closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
-        #     jumper.draw(DISPLAYSURF)
-        # else:
-        #     jumper.dies()
-        #     pygame.quit()
-        #     sys.exit()
+            # closest_pipe = 0
+            # distance_closest_pipe = WINDOW_WIDTH
+            #
+            # for pipe in pipes:
+            #     pipe.update()
+            #     pipe.draw(DISPLAYSURF)
+            #
+            #     # remove the pipes not anymore in the frame
+            #     if pipe.x_position() < 0:
+            #         pipes = pipes[1:]
+            #
+            #     if 0 < pipe.x_position() - jumper_position[0] < distance_closest_pipe:
+            #         closest_pipe = pipe
+            #         distance_closest_pipe = pipe.x_position() - jumper_position[0]
 
-        jumper.draw(DISPLAYSURF)
-        jumpers.draw(DISPLAYSURF)
-        # increase score
-        if pipes[0].x_position() == jumper_position[0] and jumper.exist():
-            jumper.increase_score()
+            think = jumper.think(closest_pipe)
+            if think:
+                jumper.jump()
+
+            jumper.update()
+            # jumper.draw(DISPLAYSURF)
+
+            # check if ball touches pipe
+            # print("\n")
+            # print("closest x1", closest_pipe.x_position())
+            # print("closest x2",closest_pipe.x_position() + closest_pipe.width_value())
+            # print("ball x", BALL_X_INIT)
+            if not (closest_pipe.x_position() < BALL_X_INIT < closest_pipe.x_position() + closest_pipe.width_value() \
+            and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1]< closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
+                # print(i)
+                jumper.draw(DISPLAYSURF)
+            else:
+                print("AHAHAH")
+                jumper.dies()
+            #     pygame.quit()
+            #     sys.exit()
+
+            jumper.draw(DISPLAYSURF)
+            # increase score
+            if pipes[0].x_position() == BALL_X_INIT and jumper.exist():
+                jumper.increase_score()
 
         # create new pipe
         if pipes[-1].x_position() % PIPES_DISTANCE == 0:
