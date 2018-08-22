@@ -10,9 +10,19 @@ class Population:
         for i in range(size):
             self.population.append(game.Ball())
 
-    def draw(self, display_surf):
-        for ball in self.population:
-            ball.draw(display_surf)
+    # def update(self):
+    #     for i,elem in enumerate(self.population):
+    #         if elem.dead:
+    #             self.population[i] = -1
+    #
+    #     self.population = [elem for elem in self.population if elem != -1]
+
+    def fitness(self):
+        sumFitness = sum(elem.score for elem in self.population)
+
+        for elem in self.population:
+            elem.fitness = elem.score / sumFitness
+
 
 # Pop = Population(2)
 # print(Pop.population)
