@@ -50,11 +50,17 @@ class Population:
         best = game.Ball(self.population[0].brain)
         if self.population[0].score > self.best.score:
             self.best = best
-        new_population = [self.best]
+
+        self.best.color = game.GREEN
+
+        new_population = []
+
         for i in range(self.size - 1):
             new_population.append(self.crossing(self.pick_parent(), self.pick_parent()))
-            # new_population[i].dead = False
+
+        new_population.append(self.best)
         self.population = new_population
+        print(self.population[0].color)
 
     def crossing(self, elem1, elem2):
         w11 = elem1.brain.first_weights_matrix.reshape(1, 16)
@@ -66,10 +72,13 @@ class Population:
         w22 = elem2.brain.second_weights_matrix.reshape(1, 4)
         b12 = elem2.brain.first_bias.reshape(1, 4)
         b22 = elem2.brain.second_bias.reshape(1, 1)
+
+        # create new matrices for the child's Neural Network
         nw1 = []
         nw2 = []
         nb1 = []
         nb2 = []
+
         for i in range(16):
             p = random.randint(0,1)
             if p == 0:
@@ -102,12 +111,13 @@ class Population:
         nw2 = asarray(nw2).reshape(1,4)
         nb1 = asarray(nb1).reshape(4,1)
         nb2 = asarray(nb2).reshape(1,1)
-        result = game.Ball(neural_net.Neural_Network(4, 4, 1))
-        result.brain.first_weights_matrix = nw1
-        result.brain.second_weights_matrix = nw2
-        result.brain.first_bias = nb1
-        result.brain.second_bias = nb2
-        return result
+
+        child = game.Ball(neural_net.Neural_Network(4, 4, 1))
+        child.brain.first_weights_matrix = nw1
+        child.brain.second_weights_matrix = nw2
+        child.brain.first_bias = nb1
+        child.brain.second_bias = nb2
+        return child
 
     def max_fitness(self):
         m = 0
@@ -126,6 +136,3 @@ class Population:
                 m = elem.score
                 e = elem
         return m, e
-
-# Pop = Population(2)
-# print(Pop.population)
