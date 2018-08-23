@@ -15,7 +15,8 @@ def change_weights(x):
     p = random.uniform(0, 1)
     if p < 0.02:
         sign = random.choice([-1, 1])
-        return x + x * sign * 0.1
+        mag = random.uniform(0, 1) / 10
+        return x + x * sign * mag
     else: return x
 
 vchange_weights = vectorize(change_weights)
