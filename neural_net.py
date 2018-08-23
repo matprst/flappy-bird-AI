@@ -15,7 +15,7 @@ def change_weights(x):
     p = random.uniform(0, 1)
     if p < 0.02:
         sign = random.choice([-1, 1])
-        mag = random.uniform(0, 1) / 10
+        mag = random.uniform(0, 1) / 20
         return x + x * sign * mag
     else: return x
 

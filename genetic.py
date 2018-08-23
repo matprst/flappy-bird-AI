@@ -15,13 +15,6 @@ class Population:
         self.size = size
         self.best = self.population[0]
 
-    # def update(self):
-    #     for i,elem in enumerate(self.population):
-    #         if elem.dead:
-    #             self.population[i] = -1
-    #
-    #     self.population = [elem for elem in self.population if elem != -1]
-
     def fitness(self):
         sumScore = sum(elem.score for elem in self.population)
         print("sumScore=", sumScore)
@@ -44,7 +37,7 @@ class Population:
 
     def next_generation(self):
         # sort by fitness descending
-        self.population.sort(key=lambda x: x.fitness, reverse=True)
+        # self.population.sort(key=lambda x: x.fitness, reverse=True)
 
         # copy best jumper
         best = game.Ball(self.population[0].brain)

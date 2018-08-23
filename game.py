@@ -15,7 +15,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-FPS = 30
+FPS = 240
 
 BALL_X_INIT = 50
 BALL_Y_INIT = int(WINDOW_HEIGHT / 2)
