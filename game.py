@@ -164,6 +164,19 @@ def main():
             # events loop
             for event in pygame.event.get():
                 if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                    print("\ngeneration", j)
+                    jumpers.fitness()
+                    # for jumper in jumpers.population:
+                    #     print(jumper.fitness)
+                    # print(jumpers.population)
+                    print("max fit=", jumpers.max_fitness()[0])
+                    mx = jumpers.max_score()
+                    print("max sco=", mx[0])
+                    print("matrices=")
+                    print(mx[1].brain.first_weights_matrix)
+                    print(mx[1].brain.second_weights_matrix)
+                    print(mx[1].brain.first_bias)
+                    print(mx[1].brain.second_bias)
                     pygame.quit()
                     sys.exit()
                 # elif (event.type == KEYDOWN and event.key == K_SPACE):
