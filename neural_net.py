@@ -13,9 +13,9 @@ def dsigmoid(x):
 
 def change_weights(x):
     p = random.uniform(0, 1)
-    if p < 0.02:
+    if p < 0.03:
         sign = random.choice([-1, 1])
-        mag = random.uniform(0, 1) / 20
+        mag = random.uniform(0, 1) / 10
         return x + x * sign * mag
     else: return x
 
@@ -29,6 +29,9 @@ class Neural_Network:
     second_bias = 0
 
     def __init__(self, input_nodes, hidden_nodes, output_nodes):
+        self.input_nodes = input_nodes
+        self.hidden_nodes = hidden_nodes
+        self.output_nodes = output_nodes
         # print(input_nodes, hidden_nodes, output_nodes)
         self.first_weights_matrix = 2 * random.rand(hidden_nodes, input_nodes) - 1
         self.second_weights_matrix = 2 * random.rand(output_nodes, hidden_nodes) - 1
@@ -36,6 +39,7 @@ class Neural_Network:
         self.first_bias = 2 * random.rand(hidden_nodes, 1) - 1
         self.second_bias = 2 * random.rand(output_nodes, 1) - 1
         self.learning_rate = 0.2
+
 
     def feedforward(self, input):
         hidden_output = dot(self.first_weights_matrix, input)

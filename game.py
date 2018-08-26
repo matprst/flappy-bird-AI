@@ -6,7 +6,7 @@ __email__= "parisot.mathias.31@gmail.com"
 import pygame, sys, random, os, neural_net, numpy, genetic
 from pygame.locals import *
 
-WINDOW_WIDTH = 300
+WINDOW_WIDTH = 240
 WINDOW_HEIGHT = 300
 
 WHITE = (255, 255, 255)
@@ -29,7 +29,7 @@ PIPE_SPACE_INIT = 100
 PIPE_WIDTH_INIT = 10
 PIPE_COLOR_INIT = WHITE
 PIPE_SPEED_INIT = -2
-PIPES_DISTANCE = 150
+PIPES_DISTANCE = 120
 
 #population
 SIZE_POPULATION = 200
@@ -200,7 +200,7 @@ def main():
                         jumper.increase_score(100)
 
             # create new pipe
-            if pipes[-1].x_position() % PIPES_DISTANCE == 0:
+            if (WINDOW_WIDTH - pipes[-1].x_position()) == PIPES_DISTANCE:
                 pipes.append(Pipe())
 
             pygame.display.update()
