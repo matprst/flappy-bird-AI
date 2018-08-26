@@ -188,6 +188,9 @@ def main():
 
                     jumper.update()
 
+                    if jumper.y <= 0 or jumper.y >= WINDOW_HEIGHT:
+                        jumper.dies()
+
                     if not (closest_pipe.x_position() < BALL_X_INIT < closest_pipe.x_position() + closest_pipe.width_value() \
                     and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1]< closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
                         jumper.draw(DISPLAYSURF)
