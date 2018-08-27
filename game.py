@@ -15,7 +15,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-FPS = 60
+FPS = 800
 
 BALL_X_INIT = 50
 BALL_Y_INIT = int(WINDOW_HEIGHT / 2)
@@ -26,8 +26,8 @@ BALL_LIFT_INIT = -12
 BALL_COLOR_INIT = RED
 BALL_SCORE_INIT = 0
 
-PIPE_SPACE_INIT = 120
-PIPE_WIDTH_INIT = 15
+PIPE_SPACE_INIT = 80
+PIPE_WIDTH_INIT = 30
 PIPE_COLOR_INIT = WHITE
 PIPE_SPEED_INIT = -2
 PIPES_DISTANCE = 120
@@ -51,7 +51,7 @@ class Ball:
         if brain is not None:
             self.brain = brain
         else:
-            self.brain = neural_net.Neural_Network(5, 8, 1)
+            self.brain = neural_net.Neural_Network(5, 5, 1)
 
     def draw(self, display_surf):
         if not self.dead:
