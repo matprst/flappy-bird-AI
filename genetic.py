@@ -37,7 +37,7 @@ class Population:
 
     def next_generation(self):
         # sort by fitness descending
-        # self.population.sort(key=lambda x: x.fitness, reverse=True)
+        self.population.sort(key=lambda x: x.fitness, reverse=True)
 
         # copy best jumper
         # best = game.Ball(self.population[0].brain)
@@ -54,6 +54,31 @@ class Population:
         # new_population.append(self.best)
         self.population = new_population
         # print(self.population[0].color)
+
+    def next_generation2(self):
+        # sort by fitness descending
+        self.population.sort(key=lambda x: x.fitness, reverse=True)
+
+        new_population = []
+
+        #pick the 5% best jumpers from previous generation
+        for i in range(int(self.size * 0.05)):
+            new_ball = game.Ball(self.population[i].brain)
+            new_population.append(new_ball)
+
+        #choose randomly 75% of the previous generation and cross them
+        for i in range(int(self.size * 0.75)):
+            new_population.append(self.crossing(self.pick_parent(), self.pick_parent()))
+
+        #choose randomly 15% of the previous generation
+        for i in range(int(self.size * 0.15)):
+            new_population.append(self.pick_parent())
+
+        for i in range(int(self.size * 0.05)):
+            new_ball = game.Ball()
+            new_population.append(new_ball)
+
+        self.population = new_population
 
     def crossing(self, elem1, elem2):
         w11 = elem1.brain.first_weights_matrix.reshape(1, elem1.brain.input_nodes * elem1.brain.hidden_nodes)

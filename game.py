@@ -15,7 +15,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-FPS = 120
+FPS = 60
 
 BALL_X_INIT = 50
 BALL_Y_INIT = int(WINDOW_HEIGHT / 2)
@@ -49,7 +49,7 @@ class Ball:
         if brain is not None:
             self.brain = brain
         else:
-            self.brain = neural_net.Neural_Network(2, 8, 1)
+            self.brain = neural_net.Neural_Network(4, 8, 1)
 
     def draw(self, display_surf):
         if not self.dead:
@@ -84,8 +84,8 @@ class Ball:
         return not self.dead
 
     def think(self, pipe):
-        # input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
-        input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH]])
+        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
+        # input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH]])
         output = self.brain.feedforward(input)
 
         return output[0, 0] > 0.5
@@ -146,6 +146,12 @@ def main():
 
         # game loop
         while not all(jumper.dead for jumper in jumpers.population):
+
+            if len(jumpers.population) < 100:
+                FPS = 120
+            if len(jumpers.population) < 50:
+                FPS = 240
+
 
             # events loop
             for event in pygame.event.get():
@@ -221,7 +227,7 @@ def main():
         print(mx[1].brain.second_weights_matrix)
         print(mx[1].brain.first_bias)
         print(mx[1].brain.second_bias)
-        jumpers.next_generation()
+        jumpers.next_generation2()
 
 
 if __name__ == '__main__':
