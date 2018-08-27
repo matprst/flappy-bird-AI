@@ -8,6 +8,7 @@ class Population:
     population = []
     size = 0
     best = 0
+    generation_number = 1
 
     def __init__(self, size):
         for i in range(size):
@@ -16,11 +17,11 @@ class Population:
         self.best = self.population[0]
 
     def fitness(self):
-        sumScore = sum(elem.score for elem in self.population)
+        sumScore = sum(elem.score**2 for elem in self.population)
         # print("sumScore=", sumScore)
 
         for elem in self.population:
-            elem.fitness = elem.score / sumScore
+            elem.fitness = (elem.score**2) / sumScore
 
     def pick_parent(self):
         p = random.uniform(0, 1)
@@ -36,6 +37,7 @@ class Population:
         return child
 
     def next_generation(self):
+        self.generation_number += 1
         # sort by fitness descending
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
@@ -56,6 +58,7 @@ class Population:
         # print(self.population[0].color)
 
     def next_generation2(self):
+        self.generation_number += 1
         # sort by fitness descending
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
@@ -154,3 +157,15 @@ class Population:
                 m = elem.score
                 e = elem
         return m, e
+
+    def info(self):
+        print("\ngeneration", self.generation_number)
+        self.fitness()
+        print("max fit=", self.max_fitness()[0])
+        mx = self.max_score()
+        print("max sco=", mx[0])
+        print("matrices=")
+        print(mx[1].brain.first_weights_matrix)
+        print(mx[1].brain.second_weights_matrix)
+        print(mx[1].brain.first_bias)
+        print(mx[1].brain.second_bias)

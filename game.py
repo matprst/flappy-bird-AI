@@ -22,6 +22,7 @@ BALL_Y_INIT = int(WINDOW_HEIGHT / 2)
 BALL_SIZE_INIT = 8
 BALL_VELOCITY_INIT = 5
 BALL_GRAVITY_INIT = 1
+BALL_LIFT_INIT = -12
 BALL_COLOR_INIT = RED
 BALL_SCORE_INIT = 0
 
@@ -41,6 +42,7 @@ class Ball:
         self.size = BALL_SIZE_INIT
         self.velocity = BALL_VELOCITY_INIT
         self.gravity = BALL_GRAVITY_INIT
+        self.lift = BALL_LIFT_INIT
         self.color = BALL_COLOR_INIT
         self.score = BALL_SCORE_INIT
         self.fitness = 0
@@ -59,20 +61,10 @@ class Ball:
         self.velocity += self.gravity
         self.y += self.velocity
 
-        if self.y >= WINDOW_HEIGHT:
-            self.y = WINDOW_HEIGHT
-            self.velocity = 0
-        elif self.y <= 0:
-            self.y = 0
-            self.velocity = 0
-
         self.score += 1
 
     def jump(self):
-        self.velocity += - self.gravity * 12
-
-    def position(self):
-        return (self.x, self.y)
+        self.velocity += self.lift
 
     def increase_score(self, amount):
         self.score += amount
@@ -80,50 +72,42 @@ class Ball:
     def dies(self):
         self.dead = True
 
-    def exist(self):
-        return not self.dead
-
     def think(self, pipe):
-        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
-        # input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH]])
+        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
+        # input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH]])
         output = self.brain.feedforward(input)
 
         return output[0, 0] > 0.5
 
+    def copy(self):
+        return Ball(self.brain)
 
 class Pipe:
     def __init__(self):
+        # half-pipes settings
+        self.x = WINDOW_WIDTH
         self.width_space = PIPE_SPACE_INIT
         self.y_space = random.randint(int(self.width_space / 2) + 20, WINDOW_HEIGHT - int(self.width_space / 2) - 20)
         self.width = PIPE_WIDTH_INIT
         self.color = PIPE_COLOR_INIT
         self.speed = PIPE_SPEED_INIT
 
-        self.top_x = WINDOW_WIDTH
+        # top half-pipe settings
         self.top_y = 0
         self.top_height = self.y_space - int(self.width_space / 2)
 
-        self.bottom_x = WINDOW_WIDTH
+        # bottom half-pipe settings
         self.bottom_y = self.y_space + int(self.width_space / 2)
         self.bottom_height = WINDOW_HEIGHT - self.y_space + int(self.width_space / 2)
 
     def draw(self, display_surf):
-        pygame.draw.rect(display_surf, self.color, (self.top_x, self.top_y, self.width, self.top_height))
-        pygame.draw.rect(display_surf, self.color, (self.bottom_x, self.bottom_y, self.width, self.bottom_height))
+        # draw top half-pipe
+        pygame.draw.rect(display_surf, self.color, (self.x, self.top_y, self.width, self.top_height))
+        # draw bottom half-pipe
+        pygame.draw.rect(display_surf, self.color, (self.x, self.bottom_y, self.width, self.bottom_height))
 
     def update(self):
-        self.top_x += self.speed
-        self.bottom_x += self.speed
-
-    def x_position(self):
-        return self.top_x
-
-    def width_value(self):
-        return self.width
-
-    # return a tuple (width of the space, y position of the middle of the space)
-    def space(self):
-        return (self.width_space, self.y_space)
+        self.x += self.speed
 
 def main():
 
@@ -137,58 +121,40 @@ def main():
 
     jumpers = genetic.Population(SIZE_POPULATION)
 
-    j = 0
     while True:
-        j += 1
-        # create pipes array and first pipe
+
+        # initialize pipe array
         pipes = []
         pipes.append(Pipe())
 
-        # game loop
+        # game loop - until all jumpers are dead
         while not all(jumper.dead for jumper in jumpers.population):
-
-            if len(jumpers.population) < 100:
-                FPS = 120
-            if len(jumpers.population) < 50:
-                FPS = 240
-
 
             # events loop
             for event in pygame.event.get():
                 if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                    print("\ngeneration", j)
-                    jumpers.fitness()
-                    print("max fit=", jumpers.max_fitness()[0])
-                    mx = jumpers.max_score()
-                    print("max sco=", mx[0])
-                    print("matrices=")
-                    print(mx[1].brain.first_weights_matrix)
-                    print(mx[1].brain.second_weights_matrix)
-                    print(mx[1].brain.first_bias)
-                    print(mx[1].brain.second_bias)
+                    jumpers.info()
+
                     pygame.quit()
                     sys.exit()
-
-            DISPLAYSURF.fill(BLACK)
 
             closest_pipe = 0
             distance_closest_pipe = WINDOW_WIDTH
 
             for pipe in pipes:
                 pipe.update()
-                pipe.draw(DISPLAYSURF)
 
                 # remove the pipes not anymore in the frame
-                if pipe.x_position() < 0:
+                if pipe.x < 0:
                     pipes = pipes[1:]
 
-                if -pipe.width_value() < pipe.x_position() - BALL_X_INIT < distance_closest_pipe:
+                # find the closest pipe from the jumpers
+                if -pipe.width < pipe.x - BALL_X_INIT < distance_closest_pipe:
                     closest_pipe = pipe
-                    distance_closest_pipe = pipe.x_position() - BALL_X_INIT
+                    distance_closest_pipe = pipe.x - BALL_X_INIT
 
-            for i, jumper in enumerate(jumpers.population):
+            for jumper in jumpers.population:
                 if not jumper.dead:
-                    jumper_position = jumper.position()
 
                     think = jumper.think(closest_pipe)
                     if think:
@@ -196,37 +162,33 @@ def main():
 
                     jumper.update()
 
+                    # colisions detection
                     if jumper.y <= 0 or jumper.y >= WINDOW_HEIGHT:
                         jumper.dies()
 
-                    if not (closest_pipe.x_position() < BALL_X_INIT < closest_pipe.x_position() + closest_pipe.width_value() \
-                    and not (closest_pipe.space()[1] - int(closest_pipe.space()[0] / 2) < jumper_position[1]< closest_pipe.space()[1] + int(closest_pipe.space()[0] / 2))):
-                        jumper.draw(DISPLAYSURF)
+                    if not (closest_pipe.x < jumper.x < closest_pipe.x + closest_pipe.width \
+                    and not (closest_pipe.y_space - int(closest_pipe.width_space / 2) < jumper.y < closest_pipe.y_space + int(closest_pipe.width_space / 2))):
+                        pass
                     else:
                         jumper.dies()
 
-                    jumper.draw(DISPLAYSURF)
-                    # increase score
-                    if pipes[0].x_position() == BALL_X_INIT and jumper.exist():
-                        jumper.increase_score(100)
-
             # create new pipe
-            if (WINDOW_WIDTH - pipes[-1].x_position()) == PIPES_DISTANCE:
+            if (WINDOW_WIDTH - pipes[-1].x) == PIPES_DISTANCE:
                 pipes.append(Pipe())
+
+            # draw game objects
+            DISPLAYSURF.fill(BLACK)
+
+            for pipe in pipes:
+                pipe.draw(DISPLAYSURF)
+
+            for jumper in jumpers.population:
+                jumper.draw(DISPLAYSURF)
 
             pygame.display.update()
             fpsClock.tick(FPS)
 
-        print("\ngeneration", j)
-        jumpers.fitness()
-        print("max fit=", jumpers.max_fitness()[0])
-        mx = jumpers.max_score()
-        print("max sco=", mx[0])
-        print("matrices=")
-        print(mx[1].brain.first_weights_matrix)
-        print(mx[1].brain.second_weights_matrix)
-        print(mx[1].brain.first_bias)
-        print(mx[1].brain.second_bias)
+        jumpers.info()
         jumpers.next_generation2()
 
 
