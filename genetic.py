@@ -31,9 +31,7 @@ class Population:
             index += 1
         index -= 1
         random_elem = self.population[index]
-        # print('index=', index)
         child = game.Ball(random_elem.brain)
-        child.brain.mutate()
         return child
 
     def next_generation(self):
@@ -64,22 +62,27 @@ class Population:
 
         new_population = []
 
-        #pick the 5% best jumpers from previous generation
+        # pick the 5% best jumpers from previous generation
         for i in range(int(self.size * 0.05)):
             new_ball = game.Ball(self.population[i].brain)
             new_population.append(new_ball)
 
-        #choose randomly 75% of the previous generation and cross them
+        # choose randomly 75% of the previous generation and cross them
         for i in range(int(self.size * 0.75)):
             new_population.append(self.crossing(self.pick_parent(), self.pick_parent()))
 
-        #choose randomly 15% of the previous generation
+        # choose randomly 15% of the previous generation
         for i in range(int(self.size * 0.15)):
             new_population.append(self.pick_parent())
 
+        # 5% of the new generation is generated completly randomly
         for i in range(int(self.size * 0.05)):
             new_ball = game.Ball()
             new_population.append(new_ball)
+
+        # mutate all the jumper of the new generation
+        for elem in new_population:
+            elem.brain.mutate()
 
         self.population = new_population
 
