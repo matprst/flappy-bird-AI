@@ -6,7 +6,7 @@ __email__= "parisot.mathias.31@gmail.com"
 import pygame, sys, random, os, neural_net, numpy, genetic
 from pygame.locals import *
 
-WINDOW_WIDTH = 240
+WINDOW_WIDTH = 170
 WINDOW_HEIGHT = 300
 
 WHITE = (255, 255, 255)
@@ -15,7 +15,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-FPS = 240
+FPS = 120
 
 BALL_X_INIT = 50
 BALL_Y_INIT = int(WINDOW_HEIGHT / 2)
@@ -25,8 +25,8 @@ BALL_GRAVITY_INIT = 1
 BALL_COLOR_INIT = RED
 BALL_SCORE_INIT = 0
 
-PIPE_SPACE_INIT = 100
-PIPE_WIDTH_INIT = 10
+PIPE_SPACE_INIT = 120
+PIPE_WIDTH_INIT = 15
 PIPE_COLOR_INIT = WHITE
 PIPE_SPEED_INIT = -2
 PIPES_DISTANCE = 120
@@ -49,7 +49,7 @@ class Ball:
         if brain is not None:
             self.brain = brain
         else:
-            self.brain = neural_net.Neural_Network(4, 4, 1)
+            self.brain = neural_net.Neural_Network(2, 8, 1)
 
     def draw(self, display_surf):
         if not self.dead:
@@ -84,15 +84,17 @@ class Ball:
         return not self.dead
 
     def think(self, pipe):
-        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
-        output = numpy.asscalar(self.brain.feedforward(input))
-        return output > 0.5
+        # input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
+        input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.top_x / WINDOW_WIDTH]])
+        output = self.brain.feedforward(input)
+
+        return output[0, 0] > 0.5
 
 
 class Pipe:
     def __init__(self):
         self.width_space = PIPE_SPACE_INIT
-        self.y_space = random.randint(int(self.width_space / 2), WINDOW_HEIGHT - int(self.width_space / 2))
+        self.y_space = random.randint(int(self.width_space / 2) + 20, WINDOW_HEIGHT - int(self.width_space / 2) - 20)
         self.width = PIPE_WIDTH_INIT
         self.color = PIPE_COLOR_INIT
         self.speed = PIPE_SPEED_INIT

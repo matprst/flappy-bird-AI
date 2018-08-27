@@ -17,7 +17,7 @@ class Population:
 
     def fitness(self):
         sumScore = sum(elem.score for elem in self.population)
-        print("sumScore=", sumScore)
+        # print("sumScore=", sumScore)
 
         for elem in self.population:
             elem.fitness = elem.score / sumScore
@@ -40,31 +40,31 @@ class Population:
         # self.population.sort(key=lambda x: x.fitness, reverse=True)
 
         # copy best jumper
-        best = game.Ball(self.population[0].brain)
-        if self.population[0].score > self.best.score:
-            self.best = best
-
-        self.best.color = game.GREEN
+        # best = game.Ball(self.population[0].brain)
+        # if self.population[0].score > self.best.score:
+        #     self.best = best
+        #
+        # self.best.color = game.GREEN
 
         new_population = []
 
-        for i in range(self.size - 1):
+        for i in range(self.size):
             new_population.append(self.crossing(self.pick_parent(), self.pick_parent()))
 
-        new_population.append(self.best)
+        # new_population.append(self.best)
         self.population = new_population
-        print(self.population[0].color)
+        # print(self.population[0].color)
 
     def crossing(self, elem1, elem2):
-        w11 = elem1.brain.first_weights_matrix.reshape(1, 16)
-        w21 = elem1.brain.second_weights_matrix.reshape(1, 4)
-        b11 = elem1.brain.first_bias.reshape(1, 4)
-        b21 = elem1.brain.second_bias.reshape(1, 1)
+        w11 = elem1.brain.first_weights_matrix.reshape(1, elem1.brain.input_nodes * elem1.brain.hidden_nodes)
+        w21 = elem1.brain.second_weights_matrix.reshape(1, elem1.brain.hidden_nodes * elem1.brain.output_nodes)
+        b11 = elem1.brain.first_bias.reshape(1, elem1.brain.hidden_nodes)
+        b21 = elem1.brain.second_bias.reshape(1, elem1.brain.output_nodes)
 
-        w12 = elem2.brain.first_weights_matrix.reshape(1, 16)
-        w22 = elem2.brain.second_weights_matrix.reshape(1, 4)
-        b12 = elem2.brain.first_bias.reshape(1, 4)
-        b22 = elem2.brain.second_bias.reshape(1, 1)
+        w12 = elem2.brain.first_weights_matrix.reshape(1, elem1.brain.input_nodes * elem1.brain.hidden_nodes)
+        w22 = elem2.brain.second_weights_matrix.reshape(1, elem1.brain.hidden_nodes * elem1.brain.output_nodes)
+        b12 = elem2.brain.first_bias.reshape(1, elem1.brain.hidden_nodes)
+        b22 = elem2.brain.second_bias.reshape(1, elem1.brain.output_nodes)
 
         # create new matrices for the child's Neural Network
         nw1 = []
@@ -72,40 +72,40 @@ class Population:
         nb1 = []
         nb2 = []
 
-        for i in range(16):
+        for i in range(elem1.brain.input_nodes * elem1.brain.hidden_nodes):
             p = random.randint(0,1)
             if p == 0:
                 nw1.append(w11.item(i))
             else:
                 nw1.append(w12.item(i))
 
-        for i in range(4):
+        for i in range(elem1.brain.hidden_nodes * elem1.brain.output_nodes):
             p = random.randint(0,1)
             if p == 0:
                 nw2.append(w21.item(i))
             else:
                 nw2.append(w22.item(i))
 
-        for i in range(4):
+        for i in range(elem1.brain.hidden_nodes):
             p = random.randint(0,1)
             if p == 0:
                 nb1.append(b11.item(i))
             else:
                 nb1.append(b12.item(i))
 
-        for i in range(1):
+        for i in range(elem1.brain.output_nodes):
             p = random.randint(0,1)
             if p == 0:
                 nb2.append(b21.item(i))
             else:
                 nb2.append(b22.item(i))
 
-        nw1 = asarray(nw1).reshape(4,4)
-        nw2 = asarray(nw2).reshape(1,4)
-        nb1 = asarray(nb1).reshape(4,1)
-        nb2 = asarray(nb2).reshape(1,1)
+        nw1 = asarray(nw1).reshape(elem1.brain.hidden_nodes,elem1.brain.input_nodes)
+        nw2 = asarray(nw2).reshape(elem1.brain.output_nodes,elem1.brain.hidden_nodes)
+        nb1 = asarray(nb1).reshape(elem1.brain.hidden_nodes,1)
+        nb2 = asarray(nb2).reshape(elem1.brain.output_nodes,1)
 
-        child = game.Ball(neural_net.Neural_Network(4, 4, 1))
+        child = game.Ball(neural_net.Neural_Network(elem1.brain.input_nodes, elem1.brain.hidden_nodes, elem1.brain.output_nodes))
         child.brain.first_weights_matrix = nw1
         child.brain.second_weights_matrix = nw2
         child.brain.first_bias = nb1

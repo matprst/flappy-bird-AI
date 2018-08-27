@@ -14,10 +14,10 @@ def dsigmoid(x):
 def change_weights(x):
     p = random.uniform(0, 1)
     if p < 0.03:
-        # sign = random.choice([-1, 1])
-        # mag = random.uniform(0, 1) / 10
-        # return x + x * sign * mag
-        return 2 * random.uniform(0, 1) - 1
+        sign = random.choice([-1, 1])
+        mag = random.uniform(0, 1) / 10
+        return x + x * sign * mag
+        # return 2 * random.uniform(0, 1) - 1
     else: return x
 
 vchange_weights = vectorize(change_weights)
