@@ -2,7 +2,6 @@ __author__= "Mathias Parisot"
 __email__= "parisot.mathias.31@gmail.com"
 
 import numpy, math, random
-# import game
 from numpy import *
 
 def sigmoid(x):
@@ -18,7 +17,6 @@ def change_weights(x):
         # mag = random.uniform(0, 1) / 10
         # return x + x * sign * mag
         gaus = random.normal(0, 0.1)
-        print(gaus)
         return x + gaus
     else: return x
 
@@ -105,12 +103,6 @@ class Neural_Network:
         self.second_weights_matrix = vchange_weights(self.second_weights_matrix)
         self.first_bias = vchange_weights(self.first_bias)
         self.second_bias = vchange_weights(self.second_bias)
-
-
-#
-# a = matrix('1, 2; 3 4')
-# b = matrix('2; 2')
-# print(a*b)
 
 if __name__ == '__main__':
 

@@ -51,7 +51,7 @@ class Ball:
         if brain is not None:
             self.brain = brain
         else:
-            self.brain = neural_net.Neural_Network(4, 6, 1)
+            self.brain = neural_net.Neural_Network(5, 8, 1)
 
     def draw(self, display_surf):
         if not self.dead:
@@ -73,7 +73,7 @@ class Ball:
         self.dead = True
 
     def think(self, pipe):
-        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT]])
+        input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT], [self.velocity / 10]])
         # input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH]])
         output = self.brain.feedforward(input)
 

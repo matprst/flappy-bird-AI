@@ -86,6 +86,20 @@ class Population:
 
         self.population = new_population
 
+    def next_generation3(self):
+        self.generation_number += 1
+
+        new_population = []
+
+        for i in range(self.size):
+            new_population.append(self.pick_parent())
+
+        # mutate all the jumper of the new generation
+        for elem in new_population:
+            elem.brain.mutate()
+
+        self.population = new_population
+
     def crossing(self, elem1, elem2):
         w11 = elem1.brain.first_weights_matrix.reshape(1, elem1.brain.input_nodes * elem1.brain.hidden_nodes)
         w21 = elem1.brain.second_weights_matrix.reshape(1, elem1.brain.hidden_nodes * elem1.brain.output_nodes)
