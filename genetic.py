@@ -30,9 +30,9 @@ class Population:
             p -= self.population[index].fitness
             index += 1
         index -= 1
-        random_elem = self.population[index]
-        child = game.Ball(random_elem.brain)
-        return child
+        # random_elem = self.population[index]
+        # child = game.Ball(random_elem.brain)
+        return self.population[index].copy()
 
     def next_generation(self):
         self.generation_number += 1
@@ -63,7 +63,7 @@ class Population:
         new_population = []
 
         # pick the 5% best jumpers from previous generation
-        for i in range(int(self.size * 0.05)):
+        for i in range(int(self.size * 0.1)):
             new_ball = game.Ball(self.population[i].brain)
             new_population.append(new_ball)
 
@@ -72,7 +72,7 @@ class Population:
             new_population.append(self.crossing(self.pick_parent(), self.pick_parent()))
 
         # choose randomly 15% of the previous generation
-        for i in range(int(self.size * 0.15)):
+        for i in range(int(self.size * 0.1)):
             new_population.append(self.pick_parent())
 
         # 5% of the new generation is generated completly randomly
@@ -92,10 +92,10 @@ class Population:
         b11 = elem1.brain.first_bias.reshape(1, elem1.brain.hidden_nodes)
         b21 = elem1.brain.second_bias.reshape(1, elem1.brain.output_nodes)
 
-        w12 = elem2.brain.first_weights_matrix.reshape(1, elem1.brain.input_nodes * elem1.brain.hidden_nodes)
-        w22 = elem2.brain.second_weights_matrix.reshape(1, elem1.brain.hidden_nodes * elem1.brain.output_nodes)
-        b12 = elem2.brain.first_bias.reshape(1, elem1.brain.hidden_nodes)
-        b22 = elem2.brain.second_bias.reshape(1, elem1.brain.output_nodes)
+        w12 = elem2.brain.first_weights_matrix.reshape(1, elem2.brain.input_nodes * elem2.brain.hidden_nodes)
+        w22 = elem2.brain.second_weights_matrix.reshape(1, elem2.brain.hidden_nodes * elem2.brain.output_nodes)
+        b12 = elem2.brain.first_bias.reshape(1, elem2.brain.hidden_nodes)
+        b22 = elem2.brain.second_bias.reshape(1, elem2.brain.output_nodes)
 
         # create new matrices for the child's Neural Network
         nw1 = []
