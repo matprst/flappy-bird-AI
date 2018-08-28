@@ -51,7 +51,7 @@ class Ball:
         if brain is not None:
             self.brain = brain
         else:
-            self.brain = neural_net.Neural_Network(5, 5, 1)
+            self.brain = neural_net.Neural_Network(5, 1, 1)
 
     def draw(self, display_surf):
         if not self.dead:
