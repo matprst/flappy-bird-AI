@@ -82,7 +82,7 @@ second_bias = [[-0.45663563]]
 
 
 -----------------------------
-608640 - full range space - wide pipe - NN 5-2-1
+226703 - full range space - wide pipe - NN 5-2-1
 -----------------------------
 
 first_weights_matrix = [[ 0.72769157 -0.94726347  0.56096883 -0.39362002  0.2542185 ]
@@ -107,7 +107,7 @@ second_bias = [[0.55310437]]
 1203408 - full range space - wide pipe - NN 5-1-1
 ------------------------------
 
-first_weights_matrix = [[-0.57154434 -0.40637788 -0.22243544  0.87648923 -0.39940361]]
-second_weights_matrix = [[-0.84376276]]
-first_bias = [[0.82597499]]
-second_bias = [[0.55310437]]
+first_weights_matrix = [[ 0.64604514  0.41740575  0.40574104 -1.05360359  0.44653145]]]
+second_weights_matrix = [[0.55846314]]
+first_bias = [[-0.16214424]]
+second_bias = [[-0.28635271]]
