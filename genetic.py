@@ -89,6 +89,8 @@ class Population:
     def next_generation3(self):
         self.generation_number += 1
 
+        self.population.sort(key=lambda x: x.fitness, reverse=True)
+        
         new_population = []
 
         for i in range(self.size):
