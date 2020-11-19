@@ -18,4 +18,4 @@ You can start and visuialize the training using:
 python game.py
 ```
 
-![alt text](https://github.com/MatPrst/flappy-bird-AI/doc/demo.png?raw=true)
+![alt text](https://github.com/MatPrst/flappy-bird-AI/tree/master/doc/demo.png?raw=true)
