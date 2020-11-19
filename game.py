@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-
-__author__= "Mathias Parisot"
-__email__= "parisot.mathias.31@gmail.com"
-
 import pygame, sys, random, os, neural_net, numpy, genetic
 from pygame.locals import *
 
-WINDOW_WIDTH = 170
+WINDOW_WIDTH = 300
 WINDOW_HEIGHT = 300
 
 WHITE = (255, 255, 255)
@@ -15,7 +11,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-FPS = 800
+FPS = 80
 
 BALL_X_INIT = 50
 BALL_Y_INIT = int(WINDOW_HEIGHT / 2)
@@ -74,7 +70,6 @@ class Ball:
 
     def think(self, pipe):
         input = numpy.matrix([[self.y / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH], [pipe.top_height / WINDOW_HEIGHT], [pipe.bottom_y / WINDOW_HEIGHT], [self.velocity / 10]])
-        # input = numpy.matrix([[(self.y - pipe.y_space) / WINDOW_HEIGHT], [pipe.x / WINDOW_WIDTH]])
         output = self.brain.feedforward(input)
 
         return output[0, 0] > 0.5

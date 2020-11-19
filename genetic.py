@@ -1,6 +1,3 @@
-__author__= "Mathias Parisot"
-__email__= "parisot.mathias.31@gmail.com"
-
 import game, neural_net, random, numpy
 from numpy import *
 
@@ -18,7 +15,6 @@ class Population:
 
     def fitness(self):
         sumScore = sum(elem.score**2 for elem in self.population)
-        # print("sumScore=", sumScore)
 
         for elem in self.population:
             elem.fitness = (elem.score**2) / sumScore
@@ -30,8 +26,6 @@ class Population:
             p -= self.population[index].fitness
             index += 1
         index -= 1
-        # random_elem = self.population[index]
-        # child = game.Ball(random_elem.brain)
         return self.population[index].copy()
 
     def next_generation(self):
@@ -39,21 +33,12 @@ class Population:
         # sort by fitness descending
         self.population.sort(key=lambda x: x.fitness, reverse=True)
 
-        # copy best jumper
-        # best = game.Ball(self.population[0].brain)
-        # if self.population[0].score > self.best.score:
-        #     self.best = best
-        #
-        # self.best.color = game.GREEN
-
         new_population = []
 
         for i in range(self.size):
             new_population.append(self.crossing(self.pick_parent(), self.pick_parent()))
 
-        # new_population.append(self.best)
         self.population = new_population
-        # print(self.population[0].color)
 
     def next_generation2(self):
         self.generation_number += 1
@@ -183,8 +168,3 @@ class Population:
         print("max fit=", self.max_fitness()[0])
         mx = self.max_score()
         print("max sco=", mx[0])
-        print("matrices=")
-        print(mx[1].brain.first_weights_matrix)
-        print(mx[1].brain.second_weights_matrix)
-        print(mx[1].brain.first_bias)
-        print(mx[1].brain.second_bias)
