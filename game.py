@@ -110,7 +110,7 @@ def main():
 
     pygame.init()
     DISPLAYSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), 0, 0)
-    pygame.display.set_caption('Flapibird')
+    pygame.display.set_caption('Flappybird')
 
     fpsClock = pygame.time.Clock()
 
