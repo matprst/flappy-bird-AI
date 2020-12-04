@@ -18,4 +18,4 @@ You can start and visuialize the training using (an almost perfect bot should be
 python game.py
 ```
 
-![new generation](images/demo-begin.png) | [last survivor](images/demo-end.png)
+![new generation](images/demo-begin.png) | ![last survivor](images/demo-end.png)
